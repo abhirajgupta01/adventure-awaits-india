@@ -1,13 +1,21 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { getStateData } from '../data';
+import { useToast } from "@/hooks/use-toast";
 import '../styles/HotelDetails.css';
 
 const HotelDetails = () => {
   const { stateId, hotelId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [bookingDate, setBookingDate] = useState({
+    checkIn: '',
+    checkOut: '',
+    guests: 2
+  });
   
   // Get state data
   const stateData = getStateData(stateId);
@@ -28,6 +36,29 @@ const HotelDetails = () => {
   if (!hotel) {
     return <div className="loading">Loading...</div>;
   }
+
+  // Function to handle booking
+  const handleBooking = () => {
+    if (!bookingDate.checkIn || !bookingDate.checkOut) {
+      toast({
+        title: "Missing Information",
+        description: "Please select check-in and check-out dates",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Here you would normally send this to a backend
+    toast({
+      title: "Booking Successful",
+      description: `Your stay at ${hotel.name} has been booked!`,
+    });
+    
+    // Redirect to bookings page after successful booking
+    setTimeout(() => {
+      navigate('/bookings');
+    }, 2000);
+  };
 
   // Create stars for background
   useEffect(() => {
@@ -145,7 +176,47 @@ const HotelDetails = () => {
           
           <div className="booking-section">
             <h2>Book Your Stay</h2>
-            <button className="book-now-btn">
+            <div className="booking-form">
+              <div className="booking-dates">
+                <div className="form-group">
+                  <label htmlFor="check-in">Check-in Date:</label>
+                  <input 
+                    type="date" 
+                    id="check-in"
+                    className="date-input"
+                    onChange={(e) => setBookingDate({...bookingDate, checkIn: e.target.value})}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="check-out">Check-out Date:</label>
+                  <input 
+                    type="date" 
+                    id="check-out"
+                    className="date-input"
+                    onChange={(e) => setBookingDate({...bookingDate, checkOut: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label htmlFor="guests">Number of Guests:</label>
+                <select 
+                  id="guests" 
+                  className="guests-select"
+                  onChange={(e) => setBookingDate({...bookingDate, guests: parseInt(e.target.value)})}
+                  defaultValue="2"
+                >
+                  <option value="1">1 Guest</option>
+                  <option value="2">2 Guests</option>
+                  <option value="3">3 Guests</option>
+                  <option value="4">4 Guests</option>
+                  <option value="5">5+ Guests</option>
+                </select>
+              </div>
+            </div>
+            <button 
+              className="book-now-btn"
+              onClick={handleBooking}
+            >
               <i className="fas fa-calendar-check"></i> Book Now
             </button>
             <p className="booking-info">
@@ -161,4 +232,4 @@ const HotelDetails = () => {
   );
 };
 
-export default HotelDetails; 
+export default HotelDetails;

@@ -1,13 +1,22 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { getStateData } from '../data';
+import { useToast } from "@/hooks/use-toast";
 import '../styles/RestaurantDetails.css';
 
 const RestaurantDetails = () => {
   const { stateId, restaurantId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [reservationDetails, setReservationDetails] = useState({
+    date: '',
+    time: '',
+    guests: 2,
+    specialRequests: ''
+  });
   
   // Get state data
   const stateData = getStateData(stateId);
@@ -28,6 +37,29 @@ const RestaurantDetails = () => {
   if (!restaurant) {
     return <div className="loading">Loading...</div>;
   }
+
+  // Function to handle reservation
+  const handleReservation = () => {
+    if (!reservationDetails.date || !reservationDetails.time) {
+      toast({
+        title: "Missing Information",
+        description: "Please select a date and time for your reservation",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Here you would normally send this to a backend
+    toast({
+      title: "Reservation Confirmed",
+      description: `Your table at ${restaurant.name} has been reserved!`,
+    });
+    
+    // Redirect to bookings page after successful reservation
+    setTimeout(() => {
+      navigate('/bookings');
+    }, 2000);
+  };
 
   // Create stars for background
   useEffect(() => {
@@ -85,7 +117,8 @@ const RestaurantDetails = () => {
               <span className="stars">{'★'.repeat(Math.floor(restaurant.rating))}{'☆'.repeat(5 - Math.floor(restaurant.rating))}</span>
               <span className="rating-value">{restaurant.rating}</span>
             </div>
-            <div className="restaurant-cuisine">Cuisine: {restaurant.cuisine}</div>
+            <div className="restaurant-cuisine">{restaurant.cuisine} Cuisine</div>
+            <div className="price-range">Price Range: {restaurant.priceRange}</div>
           </div>
           
           <div className="restaurant-image-gallery">
@@ -121,48 +154,105 @@ const RestaurantDetails = () => {
                 <span>Free Wi-Fi</span>
               </div>
               <div className="feature">
-                <i className="fas fa-parking"></i>
-                <span>Parking Available</span>
-              </div>
-              <div className="feature">
                 <i className="fas fa-glass-cheers"></i>
                 <span>Full Bar</span>
               </div>
               <div className="feature">
-                <i className="fas fa-music"></i>
-                <span>Live Music</span>
+                <i className="fas fa-parking"></i>
+                <span>Parking Available</span>
               </div>
               <div className="feature">
                 <i className="fas fa-wheelchair"></i>
                 <span>Wheelchair Accessible</span>
               </div>
               <div className="feature">
-                <i className="fas fa-credit-card"></i>
-                <span>Cards Accepted</span>
+                <i className="fas fa-leaf"></i>
+                <span>Vegetarian Options</span>
+              </div>
+              <div className="feature">
+                <i className="fas fa-fan"></i>
+                <span>Air Conditioned</span>
               </div>
             </div>
           </div>
           
           <div className="hours-section">
-            <h2>Hours</h2>
+            <h2>Opening Hours</h2>
             <div className="hours-grid">
               <div className="day">Monday - Thursday</div>
-              <div className="time">11:00 AM - 10:00 PM</div>
+              <div className="time">12:00 PM - 10:00 PM</div>
               <div className="day">Friday - Saturday</div>
-              <div className="time">11:00 AM - 11:00 PM</div>
+              <div className="time">12:00 PM - 11:00 PM</div>
               <div className="day">Sunday</div>
               <div className="time">12:00 PM - 9:00 PM</div>
             </div>
           </div>
           
           <div className="reservation-section">
-            <h2>Make a Reservation</h2>
-            <button className="reserve-now-btn">
-              <i className="fas fa-calendar-check"></i> Reserve a Table
+            <h2>Reserve Your Table</h2>
+            <div className="reservation-form">
+              <div className="form-group">
+                <label htmlFor="reservation-date">Date:</label>
+                <input 
+                  type="date" 
+                  id="reservation-date"
+                  className="date-input"
+                  onChange={(e) => setReservationDetails({...reservationDetails, date: e.target.value})}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="reservation-time">Time:</label>
+                <select 
+                  id="reservation-time" 
+                  className="time-select"
+                  onChange={(e) => setReservationDetails({...reservationDetails, time: e.target.value})}
+                  defaultValue=""
+                >
+                  <option value="" disabled>Select a time</option>
+                  <option value="12:00">12:00 PM</option>
+                  <option value="13:00">1:00 PM</option>
+                  <option value="14:00">2:00 PM</option>
+                  <option value="18:00">6:00 PM</option>
+                  <option value="19:00">7:00 PM</option>
+                  <option value="20:00">8:00 PM</option>
+                  <option value="21:00">9:00 PM</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="party-size">Party Size:</label>
+                <select 
+                  id="party-size" 
+                  className="guest-select"
+                  onChange={(e) => setReservationDetails({...reservationDetails, guests: parseInt(e.target.value)})}
+                  defaultValue="2"
+                >
+                  <option value="1">1 Person</option>
+                  <option value="2">2 People</option>
+                  <option value="3">3 People</option>
+                  <option value="4">4 People</option>
+                  <option value="5">5 People</option>
+                  <option value="6">6+ People</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="special-requests">Special Requests:</label>
+                <textarea 
+                  id="special-requests"
+                  className="request-textarea"
+                  placeholder="Any dietary restrictions or special occasions?"
+                  onChange={(e) => setReservationDetails({...reservationDetails, specialRequests: e.target.value})}
+                ></textarea>
+              </div>
+            </div>
+            <button 
+              className="reserve-btn"
+              onClick={handleReservation}
+            >
+              <i className="fas fa-calendar-check"></i> Reserve Table
             </button>
             <p className="reservation-info">
-              Secure your table for an unforgettable dining experience at {restaurant.name}.
-              Special arrangements available for private events.
+              Secure your table at {restaurant.name} to enjoy a memorable dining experience.
+              Please arrive 15 minutes before your reservation time.
             </p>
           </div>
         </div>
@@ -173,4 +263,4 @@ const RestaurantDetails = () => {
   );
 };
 
-export default RestaurantDetails; 
+export default RestaurantDetails;

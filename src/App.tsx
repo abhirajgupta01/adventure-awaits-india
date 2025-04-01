@@ -34,19 +34,19 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/home" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/attractions/:id" element={<AttractionDetails />} />
+          <Route path="/state/:stateId/attractions/:attractionId" element={<AttractionDetails />} />
           <Route path="/bookings" element={<Bookings />} />
           <Route path="/budget-results" element={<BudgetResults />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/explore-states" element={<ExploreStates />} />
-          <Route path="/hotels/:id" element={<HotelDetails />} />
+          <Route path="/state/:stateId/hotels/:hotelId" element={<HotelDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/restaurants/:id" element={<RestaurantDetails />} />
-          <Route path="/states/:stateId" element={<StateDetails />} />
-          <Route path="/states/:stateId/attractions" element={<StateAttractions />} />
-          <Route path="/states/:stateId/hotels" element={<StateHotels />} />
-          <Route path="/states/:stateId/restaurants" element={<StateRestaurants />} />
+          <Route path="/state/:stateId/restaurants/:restaurantId" element={<RestaurantDetails />} />
+          <Route path="/state/:stateId" element={<StateDetails />} />
+          <Route path="/state/:stateId/attractions" element={<StateAttractions />} />
+          <Route path="/state/:stateId/hotels" element={<StateHotels />} />
+          <Route path="/state/:stateId/restaurants" element={<StateRestaurants />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

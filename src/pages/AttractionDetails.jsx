@@ -1,13 +1,21 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { getStateData } from '../data';
+import { useToast } from "@/hooks/use-toast";
 import '../styles/AttractionDetails.css';
 
 const AttractionDetails = () => {
   const { stateId, attractionId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [ticketDetails, setTicketDetails] = useState({
+    date: '',
+    tickets: 2,
+    ticketType: 'standard'
+  });
   
   // Get state data
   const stateData = getStateData(stateId);
@@ -28,6 +36,29 @@ const AttractionDetails = () => {
   if (!attraction) {
     return <div className="loading">Loading...</div>;
   }
+
+  // Function to handle ticket booking
+  const handleBookTickets = () => {
+    if (!ticketDetails.date) {
+      toast({
+        title: "Missing Information",
+        description: "Please select a date for your visit",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Here you would normally send this to a backend
+    toast({
+      title: "Tickets Booked",
+      description: `Your tickets for ${attraction.name} have been booked!`,
+    });
+    
+    // Redirect to bookings page after successful booking
+    setTimeout(() => {
+      navigate('/bookings');
+    }, 2000);
+  };
 
   // Create stars for background
   useEffect(() => {
@@ -168,7 +199,49 @@ const AttractionDetails = () => {
           
           <div className="ticket-section">
             <h2>Get Your Tickets</h2>
-            <button className="ticket-now-btn">
+            <div className="ticket-form">
+              <div className="form-group">
+                <label htmlFor="visit-date">Visit Date:</label>
+                <input 
+                  type="date" 
+                  id="visit-date"
+                  className="date-input"
+                  onChange={(e) => setTicketDetails({...ticketDetails, date: e.target.value})}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="ticket-quantity">Number of Tickets:</label>
+                <select 
+                  id="ticket-quantity" 
+                  className="ticket-select"
+                  onChange={(e) => setTicketDetails({...ticketDetails, tickets: parseInt(e.target.value)})}
+                  defaultValue="2"
+                >
+                  <option value="1">1 Ticket</option>
+                  <option value="2">2 Tickets</option>
+                  <option value="3">3 Tickets</option>
+                  <option value="4">4 Tickets</option>
+                  <option value="5">5+ Tickets</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="ticket-type">Ticket Type:</label>
+                <select 
+                  id="ticket-type" 
+                  className="ticket-select"
+                  onChange={(e) => setTicketDetails({...ticketDetails, ticketType: e.target.value})}
+                  defaultValue="standard"
+                >
+                  <option value="standard">Standard</option>
+                  <option value="premium">Premium (Fast Track)</option>
+                  <option value="guided">Guided Tour</option>
+                </select>
+              </div>
+            </div>
+            <button 
+              className="ticket-now-btn"
+              onClick={handleBookTickets}
+            >
               <i className="fas fa-ticket-alt"></i> Book Tickets
             </button>
             <p className="ticket-info">
@@ -184,4 +257,4 @@ const AttractionDetails = () => {
   );
 };
 
-export default AttractionDetails; 
+export default AttractionDetails;

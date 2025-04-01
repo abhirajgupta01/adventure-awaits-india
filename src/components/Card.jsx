@@ -3,7 +3,18 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Star, MapPin } from 'lucide-react';
 
-const Card = ({ image, title, description, rating, location, price, link }) => {
+const Card = ({ image, title, description, rating, location, price, link, stateId, category, itemId }) => {
+  // Construct the proper link URL based on the available data
+  const getDetailLink = () => {
+    if (link) return link;
+    
+    if (stateId && category && itemId) {
+      return `/state/${stateId}/${category}/${itemId}`;
+    }
+    
+    return '#';
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 dark:bg-gray-800">
       <img 
@@ -26,7 +37,7 @@ const Card = ({ image, title, description, rating, location, price, link }) => {
           <div className="font-bold text-indigo-600 mb-3 dark:text-indigo-400">₹{price} / night</div>
         )}
         <Link 
-          to={link} 
+          to={getDetailLink()} 
           className="block w-full text-center py-2 bg-india-blue text-white rounded hover:bg-india-maroon transition-colors"
         >
           View Details

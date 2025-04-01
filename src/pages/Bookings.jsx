@@ -1,17 +1,21 @@
+
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useToast } from "@/hooks/use-toast";
 import '../styles/Bookings.css';
 
 const Bookings = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   
   // This would normally come from a database
   const dummyBookings = user ? [
     {
       id: 'b1',
-      hotelName: 'The Leela Palace',
+      type: 'hotel',
+      name: 'The Leela Palace',
       location: 'Gujarat',
       checkIn: '2024-12-01',
       checkOut: '2024-12-05',
@@ -21,15 +25,58 @@ const Bookings = () => {
     },
     {
       id: 'b2',
-      hotelName: 'Himalayan Resort',
+      type: 'hotel',
+      name: 'Himalayan Resort',
       location: 'Himachal Pradesh',
       checkIn: '2025-01-15',
       checkOut: '2025-01-20',
       guests: 3,
       status: 'pending',
       image: '/himachal-pradesh1.jpg'
+    },
+    {
+      id: 'b3',
+      type: 'restaurant',
+      name: 'Spice Garden',
+      location: 'Kerala',
+      date: '2024-11-20',
+      time: '19:00',
+      guests: 4,
+      status: 'confirmed',
+      image: '/kerala1.jpg'
+    },
+    {
+      id: 'b4',
+      type: 'attraction',
+      name: 'Taj Mahal Tour',
+      location: 'Uttar Pradesh',
+      date: '2024-10-15',
+      time: '09:00',
+      tickets: 2,
+      ticketType: 'Premium',
+      status: 'confirmed',
+      image: '/uttar-pradesh1.jpg'
     }
   ] : [];
+  
+  const formatDate = (dateString) => {
+    const options = { 
+      year: "numeric", 
+      month: "long", 
+      day: "numeric" 
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+  
+  const handleCancelBooking = (bookingId) => {
+    toast({
+      title: "Booking Cancelled",
+      description: "Your booking has been successfully cancelled.",
+    });
+    
+    // In a real app, you would remove the booking from the database
+    // For now, we'll just show the toast
+  };
   
   return (
     <div className="app-container">
@@ -47,28 +94,54 @@ const Bookings = () => {
                   {dummyBookings.map(booking => (
                     <div key={booking.id} className="booking-card">
                       <div className="booking-image">
-                        <img src={booking.image} alt={booking.hotelName} />
+                        <img src={booking.image} alt={booking.name} />
                         <div className={`booking-status ${booking.status}`}>
                           {booking.status}
                         </div>
                       </div>
                       <div className="booking-details">
-                        <h2 className="booking-hotel">{booking.hotelName}</h2>
+                        <h2 className="booking-hotel">{booking.name}</h2>
                         <p className="booking-location">
                           <i className="fas fa-map-marker-alt"></i> {booking.location}
                         </p>
-                        <div className="booking-dates">
-                          <div className="date-group">
-                            <span className="date-label">Check-in</span>
-                            <span className="date-value">{booking.checkIn}</span>
+                        
+                        {booking.type === 'hotel' ? (
+                          <div className="booking-dates">
+                            <div className="date-group">
+                              <span className="date-label">Check-in</span>
+                              <span className="date-value">{formatDate(booking.checkIn)}</span>
+                            </div>
+                            <div className="date-group">
+                              <span className="date-label">Check-out</span>
+                              <span className="date-value">{formatDate(booking.checkOut)}</span>
+                            </div>
                           </div>
-                          <div className="date-group">
-                            <span className="date-label">Check-out</span>
-                            <span className="date-value">{booking.checkOut}</span>
+                        ) : booking.type === 'restaurant' ? (
+                          <div className="booking-dates">
+                            <div className="date-group">
+                              <span className="date-label">Date</span>
+                              <span className="date-value">{formatDate(booking.date)}</span>
+                            </div>
+                            <div className="date-group">
+                              <span className="date-label">Time</span>
+                              <span className="date-value">{booking.time}</span>
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="booking-dates">
+                            <div className="date-group">
+                              <span className="date-label">Visit Date</span>
+                              <span className="date-value">{formatDate(booking.date)}</span>
+                            </div>
+                            <div className="date-group">
+                              <span className="date-label">Ticket Type</span>
+                              <span className="date-value">{booking.ticketType}</span>
+                            </div>
+                          </div>
+                        )}
+                        
                         <p className="booking-guests">
-                          <i className="fas fa-user"></i> {booking.guests} Guests
+                          <i className="fas fa-user"></i> {booking.guests || booking.tickets} {booking.type === 'attraction' ? 'Tickets' : 'Guests'}
                         </p>
                       </div>
                       <div className="booking-actions">
@@ -78,7 +151,10 @@ const Bookings = () => {
                         <button className="booking-btn modify-btn">
                           <i className="fas fa-pencil-alt"></i> Modify
                         </button>
-                        <button className="booking-btn cancel-btn">
+                        <button 
+                          className="booking-btn cancel-btn"
+                          onClick={() => handleCancelBooking(booking.id)}
+                        >
                           <i className="fas fa-times"></i> Cancel
                         </button>
                       </div>
@@ -109,4 +185,4 @@ const Bookings = () => {
   );
 };
 
-export default Bookings; 
+export default Bookings;
