@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Star, Wifi, Coffee, Car, SwimmingPool, DollarSign } from "lucide-react";
+import { MapPin, Star, Wifi, Coffee, Car, DollarSign, Utensils } from "lucide-react";
 
 const StateHotels = () => {
   const { stateId } = useParams<{ stateId: string }>();
@@ -168,7 +167,7 @@ const StateHotels = () => {
   
   const amenityIcons = {
     "Free WiFi": <Wifi size={16} />,
-    "Swimming Pool": <SwimmingPool size={16} />,
+    "Swimming Pool": <Coffee size={16} />,
     "Restaurant": <Utensils size={16} />,
     "Breakfast": <Coffee size={16} />,
     "Free Parking": <Car size={16} />

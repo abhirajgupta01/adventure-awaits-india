@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -19,18 +18,20 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Handle login logic
     console.log('Login with:', { email: loginEmail, password: loginPassword, rememberMe });
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
-    // Handle registration logic
     console.log('Register with:', { name: registerName, email: registerEmail, password: registerPassword });
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleRememberMeChange = (checked) => {
+    setRememberMe(checked === true);
   };
 
   return (
@@ -110,7 +111,7 @@ const Login = () => {
                       <Checkbox 
                         id="remember" 
                         checked={rememberMe}
-                        onCheckedChange={setRememberMe}
+                        onCheckedChange={handleRememberMeChange}
                       />
                       <label
                         htmlFor="remember"

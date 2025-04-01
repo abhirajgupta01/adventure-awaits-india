@@ -18,7 +18,8 @@ import {
   Utensils,
   Wifi,
   CreditCard,
-  Users
+  Users,
+  Car
 } from "lucide-react";
 
 const RestaurantDetails = () => {

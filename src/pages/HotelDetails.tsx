@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -18,8 +17,7 @@ import {
   Wind, 
   Car, 
   DollarSign, 
-  Star, 
-  SwimmingPool 
+  Star
 } from "lucide-react";
 
 const HotelDetails = () => {
@@ -49,7 +47,7 @@ const HotelDetails = () => {
       { name: "Flat-screen TV", icon: <Tv /> },
       { name: "Air Conditioning", icon: <Wind /> },
       { name: "Free Parking", icon: <Car /> },
-      { name: "Swimming Pool", icon: <SwimmingPool /> }
+      { name: "Swimming Pool", icon: <Water /> }
     ],
     rooms: [
       {
@@ -124,6 +122,15 @@ const HotelDetails = () => {
       }
       return prev;
     });
+  };
+
+  const handleDateSelect = (range) => {
+    if (range?.from) {
+      setDate({
+        from: range.from,
+        to: range.to || range.from
+      });
+    }
   };
 
   return (
@@ -304,7 +311,7 @@ const HotelDetails = () => {
                     <Calendar
                       mode="range"
                       selected={date}
-                      onSelect={setDate}
+                      onSelect={handleDateSelect}
                       className="rounded-md border"
                     />
                   </div>
