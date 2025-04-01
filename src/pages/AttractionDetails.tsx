@@ -28,10 +28,10 @@ const AttractionDetails = () => {
     window.scrollTo(0, 0);
     
     // If attraction not found, navigate back to home
-    if (!attraction) {
+    if (!attraction && stateData) {
       navigate('/');
     }
-  }, [attraction, navigate]);
+  }, [attraction, navigate, stateData]);
   
   if (!attraction) {
     return <div className="loading">Loading...</div>;
@@ -53,6 +53,27 @@ const AttractionDetails = () => {
       title: "Tickets Booked",
       description: `Your tickets for ${attraction.name} have been booked!`,
     });
+    
+    // Create a new booking object
+    const newBooking = {
+      id: Date.now().toString(),
+      type: 'attraction',
+      name: attraction.name,
+      location: attraction.location,
+      date: ticketDetails.date,
+      tickets: ticketDetails.tickets,
+      ticketType: ticketDetails.ticketType,
+      status: 'confirmed',
+      image: attraction.image,
+      stateId: stateId,
+      itemId: attraction.id
+    };
+    
+    // In a real app, you would store this in a database
+    // For now, we'll simulate by storing in localStorage
+    const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    existingBookings.push(newBooking);
+    localStorage.setItem('bookings', JSON.stringify(existingBookings));
     
     // Redirect to bookings page after successful booking
     setTimeout(() => {
@@ -206,6 +227,7 @@ const AttractionDetails = () => {
                   type="date" 
                   id="visit-date"
                   className="date-input"
+                  min={new Date().toISOString().split('T')[0]}
                   onChange={(e) => setTicketDetails({...ticketDetails, date: e.target.value})}
                 />
               </div>
@@ -241,6 +263,7 @@ const AttractionDetails = () => {
             <button 
               className="ticket-now-btn"
               onClick={handleBookTickets}
+              disabled={!ticketDetails.date}
             >
               <i className="fas fa-ticket-alt"></i> Book Tickets
             </button>

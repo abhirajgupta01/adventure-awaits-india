@@ -28,10 +28,10 @@ const HotelDetails = () => {
     window.scrollTo(0, 0);
     
     // If hotel not found, navigate back to home
-    if (!hotel) {
+    if (!hotel && stateData) {
       navigate('/');
     }
-  }, [hotel, navigate]);
+  }, [hotel, navigate, stateData]);
   
   if (!hotel) {
     return <div className="loading">Loading...</div>;
@@ -53,6 +53,27 @@ const HotelDetails = () => {
       title: "Booking Successful",
       description: `Your stay at ${hotel.name} has been booked!`,
     });
+    
+    // Create a new booking object (in a real app, this would be saved to a database)
+    const newBooking = {
+      id: Date.now().toString(),
+      type: 'hotel',
+      name: hotel.name,
+      location: hotel.location,
+      checkIn: bookingDate.checkIn,
+      checkOut: bookingDate.checkOut,
+      guests: bookingDate.guests,
+      status: 'confirmed',
+      image: hotel.image,
+      stateId: stateId,
+      itemId: hotel.id
+    };
+    
+    // In a real app, you would store this in a database
+    // For now, we could simulate by storing in localStorage
+    const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    existingBookings.push(newBooking);
+    localStorage.setItem('bookings', JSON.stringify(existingBookings));
     
     // Redirect to bookings page after successful booking
     setTimeout(() => {
@@ -184,6 +205,7 @@ const HotelDetails = () => {
                     type="date" 
                     id="check-in"
                     className="date-input"
+                    min={new Date().toISOString().split('T')[0]}
                     onChange={(e) => setBookingDate({...bookingDate, checkIn: e.target.value})}
                   />
                 </div>
@@ -193,7 +215,9 @@ const HotelDetails = () => {
                     type="date" 
                     id="check-out"
                     className="date-input"
+                    min={bookingDate.checkIn || new Date().toISOString().split('T')[0]}
                     onChange={(e) => setBookingDate({...bookingDate, checkOut: e.target.value})}
+                    disabled={!bookingDate.checkIn}
                   />
                 </div>
               </div>
@@ -216,6 +240,7 @@ const HotelDetails = () => {
             <button 
               className="book-now-btn"
               onClick={handleBooking}
+              disabled={!bookingDate.checkIn || !bookingDate.checkOut}
             >
               <i className="fas fa-calendar-check"></i> Book Now
             </button>

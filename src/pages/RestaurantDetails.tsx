@@ -29,10 +29,10 @@ const RestaurantDetails = () => {
     window.scrollTo(0, 0);
     
     // If restaurant not found, navigate back to home
-    if (!restaurant) {
+    if (!restaurant && stateData) {
       navigate('/');
     }
-  }, [restaurant, navigate]);
+  }, [restaurant, navigate, stateData]);
   
   if (!restaurant) {
     return <div className="loading">Loading...</div>;
@@ -54,6 +54,28 @@ const RestaurantDetails = () => {
       title: "Reservation Confirmed",
       description: `Your table at ${restaurant.name} has been reserved!`,
     });
+    
+    // Create a new booking object
+    const newBooking = {
+      id: Date.now().toString(),
+      type: 'restaurant',
+      name: restaurant.name,
+      location: restaurant.location,
+      date: reservationDetails.date,
+      time: reservationDetails.time,
+      guests: reservationDetails.guests,
+      specialRequests: reservationDetails.specialRequests,
+      status: 'confirmed',
+      image: restaurant.image,
+      stateId: stateId,
+      itemId: restaurant.id
+    };
+    
+    // In a real app, you would store this in a database
+    // For now, we'll simulate by storing in localStorage
+    const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    existingBookings.push(newBooking);
+    localStorage.setItem('bookings', JSON.stringify(existingBookings));
     
     // Redirect to bookings page after successful reservation
     setTimeout(() => {
@@ -197,6 +219,7 @@ const RestaurantDetails = () => {
                   type="date" 
                   id="reservation-date"
                   className="date-input"
+                  min={new Date().toISOString().split('T')[0]}
                   onChange={(e) => setReservationDetails({...reservationDetails, date: e.target.value})}
                 />
               </div>
@@ -207,6 +230,7 @@ const RestaurantDetails = () => {
                   className="time-select"
                   onChange={(e) => setReservationDetails({...reservationDetails, time: e.target.value})}
                   defaultValue=""
+                  disabled={!reservationDetails.date}
                 >
                   <option value="" disabled>Select a time</option>
                   <option value="12:00">12:00 PM</option>
@@ -247,6 +271,7 @@ const RestaurantDetails = () => {
             <button 
               className="reserve-btn"
               onClick={handleReservation}
+              disabled={!reservationDetails.date || !reservationDetails.time}
             >
               <i className="fas fa-calendar-check"></i> Reserve Table
             </button>

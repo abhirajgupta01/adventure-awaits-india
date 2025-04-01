@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -9,55 +10,13 @@ import '../styles/Bookings.css';
 const Bookings = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [bookings, setBookings] = useState([]);
   
-  // This would normally come from a database
-  const dummyBookings = user ? [
-    {
-      id: 'b1',
-      type: 'hotel',
-      name: 'The Leela Palace',
-      location: 'Gujarat',
-      checkIn: '2024-12-01',
-      checkOut: '2024-12-05',
-      guests: 2,
-      status: 'confirmed',
-      image: '/gujarat1.jpg'
-    },
-    {
-      id: 'b2',
-      type: 'hotel',
-      name: 'Himalayan Resort',
-      location: 'Himachal Pradesh',
-      checkIn: '2025-01-15',
-      checkOut: '2025-01-20',
-      guests: 3,
-      status: 'pending',
-      image: '/himachal-pradesh1.jpg'
-    },
-    {
-      id: 'b3',
-      type: 'restaurant',
-      name: 'Spice Garden',
-      location: 'Kerala',
-      date: '2024-11-20',
-      time: '19:00',
-      guests: 4,
-      status: 'confirmed',
-      image: '/kerala1.jpg'
-    },
-    {
-      id: 'b4',
-      type: 'attraction',
-      name: 'Taj Mahal Tour',
-      location: 'Uttar Pradesh',
-      date: '2024-10-15',
-      time: '09:00',
-      tickets: 2,
-      ticketType: 'Premium',
-      status: 'confirmed',
-      image: '/uttar-pradesh1.jpg'
-    }
-  ] : [];
+  // Fetch bookings from localStorage on component mount
+  useEffect(() => {
+    const storedBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    setBookings(storedBookings);
+  }, []);
   
   const formatDate = (dateString) => {
     const options = { 
@@ -69,13 +28,23 @@ const Bookings = () => {
   };
   
   const handleCancelBooking = (bookingId) => {
+    // Update the status of the booking to 'cancelled'
+    const updatedBookings = bookings.map(booking => 
+      booking.id === bookingId 
+        ? { ...booking, status: 'cancelled' } 
+        : booking
+    );
+    
+    // Save updated bookings to localStorage
+    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+    
+    // Update state
+    setBookings(updatedBookings);
+    
     toast({
       title: "Booking Cancelled",
       description: "Your booking has been successfully cancelled.",
     });
-    
-    // In a real app, you would remove the booking from the database
-    // For now, we'll just show the toast
   };
   
   return (
@@ -87,11 +56,11 @@ const Bookings = () => {
         <div className="bookings-container">
           <h1 className="bookings-title">My Bookings</h1>
           
-          {user ? (
+          {user || bookings.length > 0 ? (
             <>
-              {dummyBookings.length > 0 ? (
+              {bookings.length > 0 ? (
                 <div className="bookings-list">
-                  {dummyBookings.map(booking => (
+                  {bookings.map(booking => (
                     <div key={booking.id} className="booking-card">
                       <div className="booking-image">
                         <img src={booking.image} alt={booking.name} />
@@ -145,18 +114,23 @@ const Bookings = () => {
                         </p>
                       </div>
                       <div className="booking-actions">
-                        <button className="booking-btn view-btn">
+                        <Link 
+                          to={`/state/${booking.stateId}/${booking.type}/${booking.itemId}`} 
+                          className="booking-btn view-btn"
+                        >
                           <i className="fas fa-eye"></i> View Details
-                        </button>
+                        </Link>
                         <button className="booking-btn modify-btn">
                           <i className="fas fa-pencil-alt"></i> Modify
                         </button>
-                        <button 
-                          className="booking-btn cancel-btn"
-                          onClick={() => handleCancelBooking(booking.id)}
-                        >
-                          <i className="fas fa-times"></i> Cancel
-                        </button>
+                        {booking.status !== 'cancelled' && (
+                          <button 
+                            className="booking-btn cancel-btn"
+                            onClick={() => handleCancelBooking(booking.id)}
+                          >
+                            <i className="fas fa-times"></i> Cancel
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -166,7 +140,7 @@ const Bookings = () => {
                   <i className="fas fa-calendar-times"></i>
                   <h2>No Bookings Found</h2>
                   <p>You haven't made any bookings yet. Start planning your adventure today!</p>
-                  <button className="explore-btn">Explore Destinations</button>
+                  <Link to="/explore-states" className="explore-btn">Explore Destinations</Link>
                 </div>
               )}
             </>
@@ -175,6 +149,7 @@ const Bookings = () => {
               <i className="fas fa-lock"></i>
               <h2>Login Required</h2>
               <p>Please log in to view your bookings</p>
+              <Link to="/login" className="login-btn">Login Now</Link>
             </div>
           )}
         </div>
