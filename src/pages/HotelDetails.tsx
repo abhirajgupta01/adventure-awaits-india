@@ -17,7 +17,8 @@ import {
   Wind, 
   Car, 
   DollarSign, 
-  Star
+  Star,
+  Droplet
 } from "lucide-react";
 
 const HotelDetails = () => {
@@ -47,7 +48,7 @@ const HotelDetails = () => {
       { name: "Flat-screen TV", icon: <Tv /> },
       { name: "Air Conditioning", icon: <Wind /> },
       { name: "Free Parking", icon: <Car /> },
-      { name: "Swimming Pool", icon: <Water /> }
+      { name: "Swimming Pool", icon: <Droplet /> }
     ],
     rooms: [
       {
