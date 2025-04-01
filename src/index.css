@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,19 +36,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -97,5 +91,29 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom styles for our India travel theme */
+@layer components {
+  .india-section {
+    @apply py-16 px-4 md:px-8;
+  }
+  
+  .india-heading {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-india-maroon mb-8;
+  }
+  
+  .india-subheading {
+    @apply text-xl md:text-2xl font-semibold text-india-blue mb-6;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:scale-105;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-india-saffron to-india-maroon bg-clip-text text-transparent;
   }
 }
